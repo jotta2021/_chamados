@@ -4,6 +4,12 @@ Este é um projeto de sistema de chamados desenvolvido em ReactJS integrado ao b
 
 Deploy: https://chamados-ten.vercel.app/
 
+<div>
+<img width={200}  src= ''/>
+
+  
+</div>
+
 ## Funcionalidades
 
 - **Login Seguro**: A função de login está integrada de forma segura ao banco de dados Firebase, garantindo acesso controlado ao sistema.
