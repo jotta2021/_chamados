@@ -6,9 +6,9 @@ Deploy: https://chamados-ten.vercel.app/
 
 <div>
 <img width='200'  src= 'https://github.com/jotta2021/_chamados/blob/master/Captura%20de%20tela%202023-11-27%20221512.png?raw=true'/>
-<img width={200}  src= 'https://github.com/jotta2021/_chamados/blob/master/Captura%20de%20tela%202023-11-27%20221628.png'/>
-  <img width={200}  src= 'https://github.com/jotta2021/_chamados/blob/master/Captura%20de%20tela%202023-11-27%20221555.png'/>
-  <img width={200}  src= 'https://github.com/jotta2021/_chamados/blob/master/tt.png?raw=true'/>
+<img width='200'  src= 'https://github.com/jotta2021/_chamados/blob/master/Captura%20de%20tela%202023-11-27%20221628.png'/>
+  <img width='200'  src= 'https://github.com/jotta2021/_chamados/blob/master/Captura%20de%20tela%202023-11-27%20221555.png'/>
+  <img width='200'  src= 'https://github.com/jotta2021/_chamados/blob/master/tt.png?raw=true'/>
 </div>
 
 ## Funcionalidades
