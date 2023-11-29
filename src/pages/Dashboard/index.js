@@ -6,7 +6,7 @@ import Title from '../../components/Title'
 import { FiPlus, FiMessageSquare, FiSearch, FiEdit2 } from 'react-icons/fi'
 
 import { Link } from 'react-router-dom'
-import { collection, getDocs, orderBy, limit, startAfter, query} from 'firebase/firestore'
+import { collection, getDocs, orderBy, limit, startAfter, query,where} from 'firebase/firestore'
 import { db } from '../../services/firebaseConnection'
 
 import { format } from 'date-fns'
@@ -17,7 +17,7 @@ import './dashboard.css'
 const listRef = collection(db, "called")
 
 export default function Dashboard(){
-  const { logout } = useContext(AuthContext);
+  const { logout,user } = useContext(AuthContext);
 
   const [calleds, setCalleds] = useState([])
   const [loading, setLoading] = useState(true);
@@ -32,68 +32,113 @@ export default function Dashboard(){
 
   useEffect(() => {
     async function loadCalleds(){
-      const q = query(listRef, orderBy('created', 'desc'), limit(7));
+      if (user) {
+        const q = query(
+          listRef,
+          where('userId', '==', user.uid), // Filtra os chamados pelo userId do usuário autenticado
+          orderBy('created', 'desc'),
+          limit(7)
+        );
+  
+        const querySnapshot = await getDocs(q)
+        .then((snapshot)=>{
+          let list = []
+          snapshot.forEach((doc)=> {
+            list.push({
+              id: doc.id,
+              subject: doc.data().subject,
+              client: doc.data().client,
+              clienteId: doc.data().clienteId,
+              created: doc.data().created,
+              createdFormat: format(doc.data().created.toDate(), 'dd/MM/yyyy'),
+              status: doc.data().status,
+              desc: doc.data().desc,
+              userId : doc.data().userId
+            })
+          
 
-      const querySnapshot = await getDocs(q)
-      setCalleds([]);
+            
+          })
+          const lastDoc = snapshot.docs[snapshot.docs.length - 1] // Pegando o ultimo item
 
-      await updateState(querySnapshot)
-
-      setLoading(false);
-
-    }
-
-    loadCalleds();
-console.log(calleds)
-
-    return () => { }
-  }, [])
-
-
-  async function updateState(querySnapshot){
-    const isCollectionEmpty = querySnapshot.size === 0;
-
-    if(!isCollectionEmpty){
-      let list = [];
-
-      querySnapshot.forEach((doc) => {
-        list.push({
-          id: doc.id,
-          subject: doc.data().subject,
-          client: doc.data().client,
-          clienteId: doc.data().clienteId,
-          created: doc.data().created,
-          createdFormat: format(doc.data().created.toDate(), 'dd/MM/yyyy'),
-          status: doc.data().status,
-          desc: doc.data().desc,
+            setCalleds(list)
+          console.log(list)
+          console.log(lastDoc)
+         
+          
+        
         })
-      })
+        
 
-      const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1] // Pegando o ultimo item
-
-      setCalleds(calleds => [...calleds, ...list])
-      console.log(calleds)
-      setLastDocs(lastDoc);
-
-    }else{
-      setIsEmpty(true);
+       
+  
+        setLoading(false);
+      }
+      
     }
+  
+    loadCalleds();
+  
+    return () => { }
+  }, [user])
 
-    setLoadingMore(false);
-
-  }
-
-
-  async function handleMore(){
+  
+  async function handleMore() {
     setLoadingMore(true);
-
-    const q = query(listRef, orderBy('created', 'desc'), startAfter(lastDocs),  limit(7));
-    const querySnapshot = await getDocs(q);
-    await updateState(querySnapshot);
-
+  
+    try {
+      let q;
+  
+      if (lastDocs) {
+        q = query(
+          listRef,
+          where('userId', '==', user.uid),
+          orderBy('created', 'desc'),
+          startAfter(lastDocs),
+          limit(7)
+        );
+      } else {
+        q = query(
+          listRef,
+          where('userId', '==', user.uid),
+          orderBy('created', 'desc'),
+          limit(7)
+        );
+      }
+  
+      const querySnapshot = await getDocs(q);
+  
+      if (!querySnapshot.empty) {
+        const newCalleds = [];
+        querySnapshot.forEach((doc) => {
+          newCalleds.push({
+            id: doc.id,
+            subject: doc.data().subject,
+            client: doc.data().client,
+            clienteId: doc.data().clienteId,
+            created: doc.data().created,
+            createdFormat: format(doc.data().created.toDate(), 'dd/MM/yyyy'),
+            status: doc.data().status,
+            desc: doc.data().desc,
+            userId: doc.data().userId
+          });
+        });
+  
+        const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+  
+        setCalleds((prevCalleds) => [...prevCalleds, ...newCalleds]);
+        setLastDocs(lastDoc);
+      } else {
+        setIsEmpty(true);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar mais chamados:', error);
+      // Trate o erro conforme necessário
+    } finally {
+      setLoadingMore(false);
+    }
   }
-
-
+  
   function toggleModal(item){
     setShowPostModal(!showPostModal)
     setDetail(item)
@@ -181,7 +226,7 @@ console.log(calleds)
 
 
               {loadingMore && <h3>Buscando mais chamados...</h3>}    
-              {!loadingMore && !isEmpty && <button className="btn-more" onClick={handleMore}>Buscar mais</button>  }  
+              {!loadingMore && !isEmpty && <button className="btn-more" onClick={handleMore} >Buscar mais</button>  }  
             </>
           )}
         </>

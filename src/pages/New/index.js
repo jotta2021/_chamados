@@ -5,7 +5,7 @@ import Title from '../../components/Title'
 import { FiPlusCircle} from 'react-icons/fi'
 import {AuthContext} from '../../contexts/auth'
 import { db } from '../../services/firebaseConnection'
-import {collection, getDocs, getDoc, doc, addDoc, updateDoc} from 'firebase/firestore'
+import {collection, getDocs, getDoc, doc, addDoc, updateDoc,where,query} from 'firebase/firestore'
 
 import { useParams, useNavigate } from 'react-router-dom'
 
@@ -32,17 +32,23 @@ export default function New(){
 
   useEffect(() => {
     async function loadCustomers(){
-      const querySnapshot = await getDocs(listRef)
+       if (user) {
+        const q = query(
+          listRef,
+          where('userId', '==', user.uid), // Filtra os chamados pelo userId do usuário autenticado
+        );
+      const querySnapshot = await getDocs(q)
       .then( (snapshot) => {
         let lista = [];
 
         snapshot.forEach((doc) => {
           lista.push({
             id: doc.id,
-            nomeFantasia: doc.data().nomeFantasia
+            nomeFantasia: doc.data().nomeFantasia,
+            
           })
         })
-
+        
         if(snapshot.docs.size === 0){
           console.log("NENHUMA EMPRESA ENCONTRADA");
           setCustomers([ { id: '1', nomeFantasia: 'FREELA' } ])
@@ -52,7 +58,7 @@ export default function New(){
 
         setCustomers(lista);
         setLoadCustomer(false);
-
+        console.log(lista)
         if(id){
           loadId(lista);
         }
@@ -64,7 +70,7 @@ export default function New(){
         setCustomers([ { id: '1', nomeFantasia: 'FREELA' } ])
       })
     }
-
+    }
     loadCustomers();    
   }, [id])
 

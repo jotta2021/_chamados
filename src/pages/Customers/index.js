@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState,useContext } from 'react'
 import Header from '../../components/Header'
 import Title from '../../components/Title'
 import InputMask from 'react-input-mask';
@@ -6,13 +6,15 @@ import { FiUser } from 'react-icons/fi'
 
 import { db } from '../../services/firebaseConnection'
 import { addDoc, collection } from 'firebase/firestore'
-
+import {AuthContext} from '../../contexts/auth'
 import { toast } from 'react-toastify'
 
 export default function Clients(){
   const [name, setName] = useState('')
   const [cnpj, setCnpj] = useState('')
   const [email, setEmail] = useState('')
+const {user} = useContext(AuthContext);
+
 
   async function handleRegister(e){
     e.preventDefault();
@@ -21,7 +23,8 @@ export default function Clients(){
         await addDoc(collection(db, "clients"), {
           nomeFantasia: name,
           cnpj: cnpj,
-        email:email
+        email:email,
+        userId: user.uid
         })
         .then(() => {
           setName('')
@@ -69,10 +72,10 @@ export default function Clients(){
                       
                />
 
-              <label>Endereço</label>
+              <label>Email</label>
               <input
                 type="text"
-                placeholder="Endereço da empresa"
+                placeholder="Email da empresa"
                 value={email}
                 onChange={(e) => setEmail(e.target.value) }
               />

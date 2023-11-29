@@ -75,6 +75,7 @@ function AuthProvider({ children }){
         let uid = value.user.uid
 
         await setDoc(doc(db, "users", uid), {
+          userId: uid,
           name: name,
           avatarUrl: null
         })
@@ -107,6 +108,7 @@ function AuthProvider({ children }){
 
   function storageUser(data){
     localStorage.setItem('@ticketsPRO', JSON.stringify(data))
+    console.log(data)
   }
 
   async function logout(){
