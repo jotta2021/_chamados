@@ -2,7 +2,7 @@
 
 Este é um projeto de sistema de chamados desenvolvido em ReactJS integrado ao banco de dados Firebase. O sistema permite aos usuários realizar login, personalizar seus perfis com fotos e informações, armazenar dados de clientes e criar chamados detalhados com informações sobre as atividades a serem realizadas e quais clientes serão atendidos.
 
-Deploy: https://chamados-ten.vercel.app/
+Deploy: https://chamados-xza2.vercel.app/
 
 <div>
 <img width='200'  src= 'https://github.com/jotta2021/_chamados/blob/master/Captura%20de%20tela%202023-11-27%20221512.png?raw=true'/>
